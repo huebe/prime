@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include <time.h>
+#include <stdlib.h>
 
 typedef int bool;
 enum {
     false, true
 };
 
-const int cMax = 20;
+const int cMax = 10000;
 
 
 void searchPrimes(unsigned int max, bool *isPrime) {
@@ -29,7 +30,7 @@ void searchPrimes(unsigned int max, bool *isPrime) {
 }
 
 int main() {
-    bool cIsPrime[cMax];
+    bool *cIsPrime = (bool*)malloc(cMax * sizeof(bool));
 
     clock_t tStart = clock();
     searchPrimes(cMax, cIsPrime);
@@ -40,8 +41,11 @@ int main() {
             printf("%i, ", i);
         }
     }
-    printf("are prime numbers");
+
+    printf("are prime numbers. Elapsed: %f seconds\n", (double)(tEnd - tStart) / CLOCKS_PER_SEC);
 
     getchar();
+
+    free(cIsPrime);
     return 0;
 }
