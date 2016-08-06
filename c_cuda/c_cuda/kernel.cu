@@ -7,17 +7,21 @@
 #include <ctime>
 #include <cstring>
 
-#define SET_BIT_CHAR_ARRAY(arr, i) ( arr[i/8] |= 1 << (i % 8) )
-#define CLEAR_BIT_CHAR_ARRAY(arr, i) ( arr[i/8] &= ~(char)(1 << (i % 8)) )
-#define READ_BIT_CHAR_ARRAY(arr, i) ( arr[i/8] & 1 << (i % 8) )
+#define INT_SIZE ( sizeof(int) * 8)
+
+#define GET_BITMASK_INT(i) ( 1 << (i % (INT_SIZE)) )
+#define GET_ARRAY_ELEMENT(i) ( i/ (INT_SIZE))
+#define SET_BIT_INT_ARRAY(arr, i) ( arr[i/INT_SIZE] |= 1 << (i % INT_SIZE) )
+#define CLEAR_BIT_INT_ARRAY(arr, i) ( arr[i/INT_SIZE] &= ~(char)(1 << (i % INT_SIZE)) )
+#define READ_BIT_INT_ARRAY(arr, i) ( arr[i/INT_SIZE] & 1 << (i % INT_SIZE) )
 
 
 //WARNING, has to be (x + 1) % cMaxThreads == 0
 const int cMaxThreads = 1024;
-const int cMax = 2047;
+const int cMax = 1023;
 const int cNumBlocks = (cMax + 1) / cMaxThreads;
 const int cResults = cMax / 2 + 1;
-const int cResultCharArraySize = cResults / 8;
+const int cResultArraySizeInBytes = cResults / INT_SIZE + 1;
 
 /*
 #if (((cMax + 1) % cMaxThreads ) != 0)
@@ -25,41 +29,42 @@ const int cResultCharArraySize = cResults / 8;
 #endif */
 
 // memory layout: index * 2 + 1
-__global__ void calculatePrimeSingle(char *isPrime) 
+__global__ void calculatePrimeSingle(int *isPrime) 
 {
 	int x = threadIdx.x;
 	int y = blockIdx.x;
 	int i = blockDim.x * y + x;
 	int numToCheck = i * 2 + 1;
-	SET_BIT_CHAR_ARRAY(isPrime, i);
-	for (int j = 3; j < (numToCheck / 2) && READ_BIT_CHAR_ARRAY(isPrime, i); j += 2) {
+	SET_BIT_INT_ARRAY(isPrime, i);
+	for (int j = 3; j < numToCheck / 2; j += 2) {
 		if ((numToCheck % j) == 0) {
-			CLEAR_BIT_CHAR_ARRAY(isPrime, i);
+			CLEAR_BIT_INT_ARRAY(isPrime, i);
+			return;
 		}
 	}
 }
 
-__global__ void clearAll(char *isPrime)
+__global__ void clearAll(int *isPrime)
 {
 	int x = threadIdx.x;
 	int y = blockIdx.x;
 	int i = blockDim.x * y + x;
-	CLEAR_BIT_CHAR_ARRAY(isPrime, i);
+	CLEAR_BIT_INT_ARRAY(isPrime, i);
 }
 
-__global__ void setAll(char *isPrime)
+__global__ void setAll(int *isPrime)
 {
 	int x = threadIdx.x;
 	int y = blockIdx.x;
 	int i = blockDim.x * y + x;
-	SET_BIT_CHAR_ARRAY(isPrime, i);
+	atomicOr(&isPrime[GET_ARRAY_ELEMENT(x)], GET_BITMASK_INT(x));	
 }
 
 
 // Helper function for using CUDA to add vectors in parallel.
-cudaError_t calculatePrimeCuda(char *isPrime)
+cudaError_t calculatePrimeCuda(int *isPrime)
 {
-    char *dev_isPrime = 0;
+    int *dev_isPrime = 0;
     cudaError_t cudaStatus;
 
 
@@ -71,7 +76,7 @@ cudaError_t calculatePrimeCuda(char *isPrime)
     }
 
     // Allocate GPU buffers for three vectors (two input, one output)    .
-    cudaStatus = cudaMalloc((void**)&dev_isPrime, cMax * sizeof(int));
+	cudaStatus = cudaMalloc((void**)&dev_isPrime, cResultArraySizeInBytes);
     if (cudaStatus != cudaSuccess) {
         fprintf(stderr, "cudaMalloc failed!");
         goto Error;
@@ -79,7 +84,7 @@ cudaError_t calculatePrimeCuda(char *isPrime)
 
 
     // Copy input vectors from host memory to GPU buffers.
-	cudaStatus = cudaMemcpy(dev_isPrime, isPrime, cResultCharArraySize, cudaMemcpyHostToDevice);
+	cudaStatus = cudaMemcpy(dev_isPrime, isPrime, cResultArraySizeInBytes, cudaMemcpyHostToDevice);
     if (cudaStatus != cudaSuccess) {
         fprintf(stderr, "cudaMemcpy failed!");
         goto Error;
@@ -87,9 +92,9 @@ cudaError_t calculatePrimeCuda(char *isPrime)
 
 
     // Launch a kernel on the GPU with one thread for each element.
-	//calculatePrimeSingle <<<cNumBlocks, cMaxThreads >> >(dev_isPrime);
+	calculatePrimeSingle <<<cNumBlocks, cMaxThreads >> >(dev_isPrime);
 
-	clearAll << <cNumBlocks, cMaxThreads >> >(dev_isPrime);
+	//clearAll << <cNumBlocks, cMaxThreads >> >(dev_isPrime);
 	//setAll << <cNumBlocks, cMaxThreads >> >(dev_isPrime);
 
     // Check for any errors launching the kernel
@@ -108,7 +113,7 @@ cudaError_t calculatePrimeCuda(char *isPrime)
     }
 
     // Copy output vector from GPU buffer to host memory.
-	cudaStatus = cudaMemcpy(isPrime, dev_isPrime, cResultCharArraySize, cudaMemcpyDeviceToHost);
+	cudaStatus = cudaMemcpy(isPrime, dev_isPrime, cResultArraySizeInBytes, cudaMemcpyDeviceToHost);
     if (cudaStatus != cudaSuccess) {
         fprintf(stderr, "cudaMemcpy failed!");
         goto Error;
@@ -120,11 +125,19 @@ Error:
     return cudaStatus;
 }
 
+void checkBitFunctions(int* theArray)
+{
+	for (int i = 0; i < cResults; i++)
+	{
+		theArray[GET_ARRAY_ELEMENT(i)] |= GET_BITMASK_INT(i);
+	}
+}
 
 int main()
 {
-	char *cIsPrime = (char *)malloc(cResultCharArraySize);
-	memset((void*)cIsPrime, 0x00, cResultCharArraySize);
+	int *cIsPrime = (int *)malloc(cResultArraySizeInBytes);
+	memset((void*)cIsPrime, 0x00, cResultArraySizeInBytes);
+	//checkBitFunctions(cIsPrime);
 
 	clock_t tStart = clock();
 	cudaError_t cudaStatus = calculatePrimeCuda(cIsPrime);
@@ -137,7 +150,7 @@ int main()
 
 	int numPrimeNumbers = 0;
 	for (int i = 0; i < cResults; i++) {
-		if (READ_BIT_CHAR_ARRAY(cIsPrime, i)) {
+		if (READ_BIT_INT_ARRAY(cIsPrime, i)) {
 			printf("%i, ", i * 2 + 1);
 			numPrimeNumbers++;
 		}
