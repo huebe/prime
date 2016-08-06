@@ -7,15 +7,16 @@ enum {
   false, true
 };
 
-const int cMax = 1000000;
+const int cMax = 1000;
 
 void searchPrimes(unsigned int max, bool *isPrime) {
   //sanity checks and init stuff
   if (max == 0) return;
-  isPrime[0] = true;
-  isPrime[1] = true;
+  isPrime[0] = false;
+  isPrime[1] = false;
   if (max < 2) return;
   isPrime[2] = true; //special case
+  isPrime[3] = true;
   for (int i = 4; i <= max;
        isPrime[i] = (i % 2 == 1) ? true : false, i++); //even numbers > 2 are NEVER prime numbers, ods can be
 
@@ -36,13 +37,15 @@ int main() {
   searchPrimes(cMax, cIsPrime);
   clock_t tEnd = clock();
 
+  int numPrimeNumbers = 0;
   for (int i = 0; i < cMax; i++) {
     if (cIsPrime[i]) {
       printf("%i, ", i);
+      numPrimeNumbers++;
     }
   }
 
-  printf("are prime numbers.\nElapsed: %f seconds\n", (double) (tEnd - tStart) / CLOCKS_PER_SEC);
+  printf("are prime numbers.\nTotal %i prime numbers.\nElapsed: %f seconds\n", numPrimeNumbers, (double)(tEnd - tStart) / CLOCKS_PER_SEC);
 
   getchar();
 
