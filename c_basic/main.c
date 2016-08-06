@@ -7,7 +7,7 @@ enum {
     false, true
 };
 
-const int cMax = 10000;
+const int cMax = 1000000;
 
 
 void searchPrimes(unsigned int max, bool *isPrime) {
