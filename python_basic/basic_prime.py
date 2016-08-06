@@ -1,6 +1,5 @@
 import time
 
-
 def search_prime(max):
     primes = [2]
     for i in xrange(3, max, 2):
@@ -16,9 +15,10 @@ def search_prime(max):
 
 def main():
     start = time.clock()
-    primes = search_prime(1024)
+    primes = search_prime(1000000)
     end = time.clock()
     print primes, "are prime numbers. Elapsed:", (end - start), "seconds"
+    print "Amount of prime numbers found:", len(primes)
 
 if __name__ == "__main__":
     main()
