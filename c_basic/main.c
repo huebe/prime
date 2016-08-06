@@ -42,7 +42,7 @@ int main() {
     }
   }
 
-  printf("are prime numbers. Elapsed: %f seconds\n", (double) (tEnd - tStart) / CLOCKS_PER_SEC);
+  printf("are prime numbers.\nElapsed: %f seconds\n", (double) (tEnd - tStart) / CLOCKS_PER_SEC);
 
   getchar();
 
