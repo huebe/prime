@@ -16,7 +16,7 @@ def search_prime(max):
 
 def main():
     start = time.clock()
-    primes = search_prime(1024)
+    primes = search_prime(1000000)
     end = time.clock()
     print primes, "are prime numbers. Elapsed:", (end - start), "seconds"
 

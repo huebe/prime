@@ -7,13 +7,14 @@
 #include <ctime>
 #include <cstring>
 
-#define INT_SIZE ( sizeof(int) * 8)
+#define INT_SIZE ( sizeof(int) )
+#define INT_SIZE_BITS ( sizeof(int) * 8)
 
-#define GET_BITMASK_INT(i) ( 1 << (i % (INT_SIZE)) )
-#define GET_ARRAY_ELEMENT(i) ( i/ (INT_SIZE))
-#define SET_BIT_INT_ARRAY(arr, i) ( arr[i/INT_SIZE] |= 1 << (i % INT_SIZE) )
-#define CLEAR_BIT_INT_ARRAY(arr, i) ( arr[i/INT_SIZE] &= ~(char)(1 << (i % INT_SIZE)) )
-#define READ_BIT_INT_ARRAY(arr, i) ( arr[i/INT_SIZE] & 1 << (i % INT_SIZE) )
+#define GET_BITMASK_INT(i) ( (unsigned int)1 << (i % (INT_SIZE_BITS)) )
+#define GET_ARRAY_ELEMENT(i) ( i/ (INT_SIZE_BITS))
+#define SET_BIT_INT_ARRAY(arr, i) ( arr[i/INT_SIZE_BITS] |= 1 << (i % INT_SIZE_BITS) )
+#define CLEAR_BIT_INT_ARRAY(arr, i) ( arr[i/INT_SIZE_BITS] &= ~(char)(1 << (i % INT_SIZE_BITS)) )
+#define READ_BIT_INT_ARRAY(arr, i) ( arr[i/INT_SIZE_BITS] & 1 << (i % INT_SIZE_BITS) )
 
 
 //WARNING, has to be (x + 1) % cMaxThreads == 0
@@ -21,7 +22,7 @@ const int cMaxThreads = 1024;
 const int cMax = 1023;
 const int cNumBlocks = (cMax + 1) / cMaxThreads;
 const int cResults = cMax / 2 + 1;
-const int cResultArraySizeInBytes = cResults / INT_SIZE + 1;
+const int cResultArraySizeInBytes = cResults / INT_SIZE_BITS + INT_SIZE;
 
 /*
 #if (((cMax + 1) % cMaxThreads ) != 0)
@@ -34,14 +35,15 @@ __global__ void calculatePrimeSingle(int *isPrime)
 	int x = threadIdx.x;
 	int y = blockIdx.x;
 	int i = blockDim.x * y + x;
-	int numToCheck = i * 2 + 1;
-	SET_BIT_INT_ARRAY(isPrime, i);
+	int numToCheck = i * 2 + 1;	
 	for (int j = 3; j < numToCheck / 2; j += 2) {
 		if ((numToCheck % j) == 0) {
 			CLEAR_BIT_INT_ARRAY(isPrime, i);
+			atomicAnd(&isPrime[GET_ARRAY_ELEMENT(x)], ~GET_BITMASK_INT(x));
 			return;
 		}
 	}
+	atomicOr(&isPrime[GET_ARRAY_ELEMENT(x)], GET_BITMASK_INT(x));
 }
 
 __global__ void clearAll(int *isPrime)
@@ -137,7 +139,7 @@ int main()
 {
 	int *cIsPrime = (int *)malloc(cResultArraySizeInBytes);
 	memset((void*)cIsPrime, 0x00, cResultArraySizeInBytes);
-	//checkBitFunctions(cIsPrime);
+	checkBitFunctions(cIsPrime);
 
 	clock_t tStart = clock();
 	cudaError_t cudaStatus = calculatePrimeCuda(cIsPrime);
