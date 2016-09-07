@@ -8,7 +8,7 @@ enum {
   false, true
 };
 
-const int cMax = 100000;
+const int cMax = 1000000000;
 
 void searchPrimesBasic(unsigned int max, bool *isPrime) {
   //sanity checks and init stuff
@@ -62,7 +62,7 @@ void searchAndPrint(void (*searchPrimes)(unsigned int, bool*), int max) {
   int numPrimeNumbers = 0;
   for (int i = 0; i < max; i++) {
     if (isPrime[i]) {
-      printf("%i, ", i);
+//    printf("%i, ", i);
       numPrimeNumbers++;
     }
   }
@@ -71,7 +71,7 @@ void searchAndPrint(void (*searchPrimes)(unsigned int, bool*), int max) {
 }
 
 int main() {
-  searchAndPrint(&searchPrimesBasic, cMax);
+  //searchAndPrint(&searchPrimesBasic, cMax);
   searchAndPrint(&searchPrimes2, cMax);
   getchar();
 
