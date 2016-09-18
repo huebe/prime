@@ -8,9 +8,9 @@ enum {
   false, true
 };
 
-const int cMax = 1000000000;
+const unsigned long long cMax = 1000000000;
 
-void searchPrimesBasic(unsigned int max, bool *isPrime) {
+void searchPrimesBasic(unsigned long long max, bool *isPrime) {
   //sanity checks and init stuff
   if (max == 0) return;
   isPrime[0] = false;
@@ -22,8 +22,8 @@ void searchPrimesBasic(unsigned int max, bool *isPrime) {
        isPrime[i] = (i % 2 == 1) ? true : false, i++); //even numbers > 2 are NEVER prime numbers, ods can be
 
   //lets search for prime numbers
-  for (int i = 3; i <= max; i += 2) {
-    for (int j = 3; j < i / 2 && isPrime[i]; j += 2) {
+  for (unsigned long long i = 3; i <= max; i += 2) {
+    for (unsigned long long j = 3; j < i / 2 && isPrime[i]; j += 2) {
       if ((i % j) == 0) {
         isPrime[i] = false;
       }
@@ -31,7 +31,7 @@ void searchPrimesBasic(unsigned int max, bool *isPrime) {
   }
 }
 
-void searchPrimes2(unsigned int max, bool *isPrime) {
+void searchPrimes2(unsigned long long max, bool *isPrime) {
   //sanity checks and init stuff
   if (max == 0) return;
   isPrime[0] = false;
@@ -43,8 +43,8 @@ void searchPrimes2(unsigned int max, bool *isPrime) {
        isPrime[i] = (i % 2 == 1) ? true : false, i++); //even numbers > 2 are NEVER prime numbers, ods can be
 
   //lets search for prime numbers
-  for (int i = 3; i <= max; i += 2) {
-    for (int j = 3; j <= sqrt(i) && isPrime[i]; j += 2) {
+  for (unsigned long long i = 3; i <= max; i += 2) {
+    for (unsigned long long j = 3; j <= sqrt(i) && isPrime[i]; j += 2) {
       if ((i % j) == 0) {
         isPrime[i] = false;
       }
@@ -52,7 +52,7 @@ void searchPrimes2(unsigned int max, bool *isPrime) {
   }
 }
 
-void searchAndPrint(void (*searchPrimes)(unsigned int, bool*), int max) {
+void searchAndPrint(void (*searchPrimes)(unsigned long long, bool*), unsigned long long max) {
   bool *isPrime = (bool *) malloc(max * sizeof(bool));
 
   clock_t tStart = clock();
