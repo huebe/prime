@@ -15,7 +15,8 @@ TEST(UlonglongBitSetTest, SetBits) {
   unsigned long long testArray[10];
   memset(testArray, 0, sizeof(testArray));
   SET_BIT_ULONGLONG_ARRAY(testArray, 2);
-  ASSERT_EQ(testArray[0], 4);
+  SET_BIT_ULONGLONG_ARRAY(testArray, 63);
+  ASSERT_EQ(testArray[0], 0x8000000000000004);
 }
 
 
