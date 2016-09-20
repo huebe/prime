@@ -10,10 +10,10 @@
 #define ULONGLONG_SIZE ( sizeof(unsigned long long))
 #define ULONGLONG_SIZE_BITS ( ULONGLONG_SIZE * 8)
 
-#define GET_BITMASK_ULONGLONG(i) ( (unsigned int)1 << (i % (ULONGLONG_SIZE_BITS)) )
-#define GET_ARRAY_ULONGLONG(i) ( i/ (ULONGLONG_SIZE))
-#define SET_BIT_ULONGLONG_ARRAY(arr, i) ( arr[i/ULONGLONG_SIZE_BITS] |= (1ULL << (i % ULONGLONG_SIZE_BITS)) )
-#define CLEAR_BIT_ULONGLONG_ARRAY(arr, i) ( arr[i/ULONGLONG_SIZE_BITS] &= ~(char)(1ULL << (i % ULONGLONG_SIZE_BITS)) )
+#define GET_BITMASK_ULONGLONG(i) ( 1ULL << ((unsigned int)(i) % (ULONGLONG_SIZE_BITS)) )
+#define GET_ARRAY_ULONGLONG(i) ( (unsigned int)(i)/ (ULONGLONG_SIZE_BITS))
+#define SET_BIT_ULONGLONG_ARRAY(arr, i) ( arr[(unsigned int)(i)/ULONGLONG_SIZE_BITS] |= (1ULL << ((unsigned int)(i) % ULONGLONG_SIZE_BITS)) )
+#define CLEAR_BIT_ULONGLONG_ARRAY(arr, i) ( arr[(unsigned int)(i)/ULONGLONG_SIZE_BITS] &= ~(1ULL << ((unsigned int)(i) % ULONGLONG_SIZE_BITS)) )
 
 
 // int helper macros
