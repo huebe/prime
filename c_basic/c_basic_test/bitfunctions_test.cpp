@@ -17,7 +17,12 @@ TEST(UlonglongBitSetTest, SetBits) {
   SET_BIT_ULONGLONG_ARRAY(testArray, 2);
   SET_BIT_ULONGLONG_ARRAY(testArray, 63);
   ASSERT_EQ(testArray[0], 0x8000000000000004);
+  SET_BIT_ULONGLONG_ARRAY(testArray, 66);
+  SET_BIT_ULONGLONG_ARRAY(testArray, 127);
+  ASSERT_EQ(testArray[1], 0x8000000000000004);
 }
+
+
 
 
 
