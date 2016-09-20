@@ -49,6 +49,21 @@ TEST(UlonglongBitSetTest, ClearBits) {
   ASSERT_EQ(testArray[1], 0x8000000000000004);
 }
 
+TEST(UlonglongBitSetTest, ReadBits) {
+  unsigned long long testArray[10];
+  memset(testArray, 0xFF, sizeof(testArray));
+  for(int i = 0; i < 2 * ULONGLONG_SIZE_BITS; i++) {
+    if(i == 2 || i == 63|| (i == (64 + 2)) || (i == (64 + 63))) // set the trap
+      continue;
+    CLEAR_BIT_ULONGLONG_ARRAY(testArray, i);
+  }
+  ASSERT_EQ(0, READ_BIT_ULONGLONG_ARRAY(testArray, 0));
+  ASSERT_EQ(1, READ_BIT_ULONGLONG_ARRAY(testArray, 2));
+  ASSERT_EQ(1, READ_BIT_ULONGLONG_ARRAY(testArray, 63));
+  ASSERT_EQ(0, READ_BIT_ULONGLONG_ARRAY(testArray, 0 + 64));
+  ASSERT_EQ(1, READ_BIT_ULONGLONG_ARRAY(testArray, 2 + 64));
+  ASSERT_EQ(1, READ_BIT_ULONGLONG_ARRAY(testArray, 63 + 64));
+}
 
 int main(int argc, char **argv) {
   testing::InitGoogleTest(&argc, argv);

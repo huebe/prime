@@ -14,6 +14,7 @@
 #define GET_ARRAY_ULONGLONG(i) ( (unsigned int)(i)/ (ULONGLONG_SIZE_BITS))
 #define SET_BIT_ULONGLONG_ARRAY(arr, i) ( arr[(unsigned int)(i)/ULONGLONG_SIZE_BITS] |= (1ULL << ((unsigned int)(i) % ULONGLONG_SIZE_BITS)) )
 #define CLEAR_BIT_ULONGLONG_ARRAY(arr, i) ( arr[(unsigned int)(i)/ULONGLONG_SIZE_BITS] &= ~(1ULL << ((unsigned int)(i) % ULONGLONG_SIZE_BITS)) )
+#define READ_BIT_ULONGLONG_ARRAY(arr, i) ( arr[(unsigned int)(i)/ULONGLONG_SIZE_BITS] >> ((unsigned int)(i) % ULONGLONG_SIZE_BITS) & 1ULL )
 
 
 // int helper macros

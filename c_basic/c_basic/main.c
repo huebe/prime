@@ -2,36 +2,31 @@
 #include <time.h>
 #include <stdlib.h>
 #include <math.h>
+#include "bitfunctions.h"
 
-typedef int bool;
-enum {
-  false, true
-};
+const unsigned long long cMax = 1000;
 
-const unsigned long long cMax = 1000000000;
-
-void searchPrimesBasic(unsigned long long max, bool *isPrime) {
+void searchPrimesBasic(unsigned long long max, unsigned long long *isPrime) {
   //sanity checks and init stuff
   if (max == 0) return;
-  isPrime[0] = false;
-  isPrime[1] = false;
+  CLEAR_BIT_ULONGLONG_ARRAY(isPrime, 0);
+  CLEAR_BIT_ULONGLONG_ARRAY(isPrime, 1);
   if (max < 2) return;
-  isPrime[2] = true; //special case
-  isPrime[3] = true;
-  for (int i = 4; i <= max;
-       isPrime[i] = (i % 2 == 1) ? true : false, i++); //even numbers > 2 are NEVER prime numbers, ods can be
+  SET_BIT_ULONGLONG_ARRAY(isPrime, 2);
+  SET_BIT_ULONGLONG_ARRAY(isPrime, 3);
+  for (int i = 4; i <= max; ((i % 2 == 1) ? SET_BIT_ULONGLONG_ARRAY(isPrime, i) : CLEAR_BIT_ULONGLONG_ARRAY(isPrime, i)), i++);
 
   //lets search for prime numbers
   for (unsigned long long i = 3; i <= max; i += 2) {
-    for (unsigned long long j = 3; j < i / 2 && isPrime[i]; j += 2) {
+    for (unsigned long long j = 3; j < i / 2 && READ_BIT_ULONGLONG_ARRAY(isPrime, i); j += 2) {
       if ((i % j) == 0) {
-        isPrime[i] = false;
+        CLEAR_BIT_ULONGLONG_ARRAY(isPrime, i);
       }
     }
   }
 }
 
-void searchPrimes2(unsigned long long max, bool *isPrime) {
+/* void searchPrimes2(unsigned long long max, bool *isPrime) {
   //sanity checks and init stuff
   if (max == 0) return;
   isPrime[0] = false;
@@ -50,10 +45,10 @@ void searchPrimes2(unsigned long long max, bool *isPrime) {
       }
     }
   }
-}
+} */
 
-void searchAndPrint(void (*searchPrimes)(unsigned long long, bool*), unsigned long long max) {
-  bool *isPrime = (bool *) malloc(max * sizeof(bool));
+void searchAndPrint(void (*searchPrimes)(unsigned long long, unsigned long long*), unsigned long long max) {
+  unsigned long long *isPrime = (unsigned long long *) malloc((max / ULONGLONG_SIZE_BITS) + 1);
 
   clock_t tStart = clock();
   (*searchPrimes)(max, isPrime);
@@ -61,8 +56,8 @@ void searchAndPrint(void (*searchPrimes)(unsigned long long, bool*), unsigned lo
 
   int numPrimeNumbers = 0;
   for (int i = 0; i < max; i++) {
-    if (isPrime[i]) {
-//    printf("%i, ", i);
+    if (READ_BIT_ULONGLONG_ARRAY(isPrime, i)) {
+      printf("%i, ", i);
       numPrimeNumbers++;
     }
   }
@@ -71,8 +66,8 @@ void searchAndPrint(void (*searchPrimes)(unsigned long long, bool*), unsigned lo
 }
 
 int main() {
-  //searchAndPrint(&searchPrimesBasic, cMax);
-  searchAndPrint(&searchPrimes2, cMax);
+  searchAndPrint(&searchPrimesBasic, cMax);
+  //searchAndPrint(&searchPrimes2, cMax);
   getchar();
 
 
