@@ -3,8 +3,9 @@
 #include <stdlib.h>
 #include <math.h>
 #include "bitfunctions.h"
+#include "prime_omp.h"
 
-const unsigned long long cMax = 10000000000;
+const unsigned long long cMax = 100000000;
 
 void searchPrimesBasic(unsigned long long max, unsigned long long *isPrime) {
   //sanity checks and init stuff
@@ -67,7 +68,7 @@ void searchAndPrint(void (*searchPrimes)(unsigned long long, unsigned long long*
 }
 
 int main() {
-  //searchAndPrint(&searchPrimesBasic, cMax);
   searchAndPrint(&searchPrimesBasic2, cMax);
+  searchAndPrint(&searchPrimesBasicOMP, cMax);
   return 0;
 }
