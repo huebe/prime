@@ -6,8 +6,10 @@
       <sourceFolder url="file://$MODULE_DIR$/c_basic_test/CMakeLists.txt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/CMakeLists.txt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/c_basic/bitfunctions.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/c_basic/prime_omp.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/c_basic/main.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/c_basic/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/c_basic/prime_omp.c" isTestSource="false" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library">

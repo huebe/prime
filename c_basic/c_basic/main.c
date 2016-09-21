@@ -4,7 +4,7 @@
 #include <math.h>
 #include "bitfunctions.h"
 
-const unsigned long long cMax = 1000;
+const unsigned long long cMax = 10000000000;
 
 void searchPrimesBasic(unsigned long long max, unsigned long long *isPrime) {
   //sanity checks and init stuff
@@ -57,7 +57,7 @@ void searchAndPrint(void (*searchPrimes)(unsigned long long, unsigned long long*
   int numPrimeNumbers = 0;
   for (int i = 0; i < max; i++) {
     if (READ_BIT_ULONGLONG_ARRAY(isPrime, i)) {
-      printf("%i, ", i);
+    //  printf("%i, ", i);
       numPrimeNumbers++;
     }
   }
@@ -67,8 +67,7 @@ void searchAndPrint(void (*searchPrimes)(unsigned long long, unsigned long long*
 }
 
 int main() {
-  searchAndPrint(&searchPrimesBasic, cMax);
+  //searchAndPrint(&searchPrimesBasic, cMax);
   searchAndPrint(&searchPrimesBasic2, cMax);
-
   return 0;
 }

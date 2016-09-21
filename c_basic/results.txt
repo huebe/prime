@@ -1,0 +1,8 @@
+searchPrimesBasic2, cMax = 10000000000;
+
+/home/huebe/.CLion2016.2/system/cmake/generated/c_basic-2d85b00b/2d85b00b/Release/c_basic/prime_c
+are prime numbers.
+Total 15463414 prime numbers.
+Elapsed: 40465.250538 seconds
+
+Process finished with exit code 0
