@@ -1,3 +1,10 @@
+#if __STDC_VERSION__ >= 199901L
+#define _XOPEN_SOURCE 600
+#else
+#define _XOPEN_SOURCE 500
+#endif /* __STDC_VERSION__ */
+
+
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
@@ -5,6 +12,7 @@
 #include "bitfunctions.h"
 #include "prime_omp.h"
 
+//const unsigned long long cMax = 10000000000;
 const unsigned long long cMax = 100000000;
 
 void searchPrimesBasic(unsigned long long max, unsigned long long *isPrime) {
@@ -51,9 +59,16 @@ void searchPrimesBasic2(unsigned long long max, unsigned long long *isPrime) {
 void searchAndPrint(void (*searchPrimes)(unsigned long long, unsigned long long*), unsigned long long max) {
   unsigned long long *isPrime = (unsigned long long *) malloc(((max / ULONGLONG_SIZE_BITS) + 1) * sizeof(unsigned long long));
 
+  struct timespec start, finish;
+  double elapsed;
+  clock_gettime(CLOCK_MONOTONIC, &start);
   clock_t tStart = clock();
   (*searchPrimes)(max, isPrime);
   clock_t tEnd = clock();
+  clock_gettime(CLOCK_MONOTONIC, &finish);
+  elapsed = (finish.tv_sec - start.tv_sec);
+  elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
+
 
   int numPrimeNumbers = 0;
   for (int i = 0; i < max; i++) {
@@ -63,12 +78,13 @@ void searchAndPrint(void (*searchPrimes)(unsigned long long, unsigned long long*
     }
   }
 
-  printf("are prime numbers.\nTotal %i prime numbers.\nElapsed: %f seconds\n", numPrimeNumbers, (double)(tEnd - tStart) / CLOCKS_PER_SEC);
+  printf("are prime numbers.\nTotal %i prime numbers.\nPocessor time elapsed: %f seconds\nWall time elapsed: %f seconds\n",
+         numPrimeNumbers, (double)(tEnd - tStart) / CLOCKS_PER_SEC, elapsed);
   free(isPrime);
 }
 
 int main() {
-  searchAndPrint(&searchPrimesBasic2, cMax);
   searchAndPrint(&searchPrimesBasicOMP, cMax);
+  searchAndPrint(&searchPrimesBasic2, cMax);
   return 0;
 }

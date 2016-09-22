@@ -15,7 +15,7 @@ void searchPrimesBasicOMP(unsigned long long max, unsigned long long *isPrime) {
   SET_BIT_ULONGLONG_ARRAY(isPrime, 3);
   for (int i = 4; i <= max; ((i % 2 == 1) ? SET_BIT_ULONGLONG_ARRAY(isPrime, i) : CLEAR_BIT_ULONGLONG_ARRAY(isPrime, i)), i++);
 
-#pragma omp parallel for
+#pragma omp parallel for schedule(static, 100000)
   for (unsigned long long i = 3; i <= max; i += 2) {
     for (unsigned long long j = 3; j <= sqrt(i) && READ_BIT_ULONGLONG_ARRAY(isPrime, i); j += 2) {
       if ((i % j) == 0) {
