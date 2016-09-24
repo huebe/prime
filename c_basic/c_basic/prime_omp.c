@@ -1,9 +1,10 @@
 //
 // Created by huebe on 20.09.16.
 //
-#include <omp.h>
+
 #include <math.h>
 #include "bitfunctions.h"
+#include "prime_omp.h"
 
 void searchPrimesBasicOMP(unsigned long long max, unsigned long long *isPrime) {
   //sanity checks and init stuff

@@ -13,3 +13,5 @@ set(SOURCE_FILES main.c bitfunctions.h prime_omp.c prime_omp.h)
 add_executable(prime_c ${SOURCE_FILES})
 
 target_link_libraries(prime_c m)
+
+message(CMAKE_C_FLAGS)
