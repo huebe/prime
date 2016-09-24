@@ -12,7 +12,7 @@
 #include "bitfunctions.h"
 #include "prime_omp.h"
 
-const unsigned long long cMax = 1000000;
+const unsigned long long cMax = 1023;
 
 
 void searchPrimesBasic(unsigned long long max, unsigned long long *isPrime) {
@@ -56,7 +56,7 @@ void searchPrimesBasic2(unsigned long long max, unsigned long long *isPrime) {
 }
 
 
-void searchAndPrint(void (*searchPrimes)(unsigned long long, unsigned long long*), unsigned long long max) {
+void searchAndPrint(void (*searchPrimes)(unsigned long long, unsigned long long*), unsigned long long max, char* msg) {
   unsigned long long *isPrime = (unsigned long long *) malloc(((max / ULONGLONG_SIZE_BITS) + 1) * sizeof(unsigned long long));
 
   struct timespec start, finish;
@@ -78,13 +78,13 @@ void searchAndPrint(void (*searchPrimes)(unsigned long long, unsigned long long*
     }
   }
 
-  printf("are prime numbers.\nTotal %i prime numbers.\nPocessor time elapsed: %f seconds\nWall time elapsed: %f seconds\n",
-         numPrimeNumbers, (double)(tEnd - tStart) / CLOCKS_PER_SEC, elapsed);
+  printf("%s.\nTotal %i prime numbers.\nPocessor time elapsed: %f seconds\nWall time elapsed: %f seconds\n",
+         msg, numPrimeNumbers, (double)(tEnd - tStart) / CLOCKS_PER_SEC, elapsed);
   free(isPrime);
 }
 
 int main() {
-  searchAndPrint(&searchPrimesBasicOMP, cMax);
-  searchAndPrint(&searchPrimesBasic2, cMax);
+  searchAndPrint(&searchPrimesBasicOMP, cMax, "OpenMP");
+  searchAndPrint(&searchPrimesBasic2, cMax, "Singlethreaded");
   return 0;
 }
