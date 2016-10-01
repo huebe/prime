@@ -4,6 +4,8 @@
 
 #ifndef PRIME_OMP_H
 
+#include <omp.h>
+
 void searchPrimesBasicOMP(unsigned long long max, unsigned long long *isPrime);
 
 #define PRIME_OMP_H
